@@ -43,8 +43,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   @ViewChild('backdivTitle', { static: true })
   backdivTitle!: ElementRef;
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
     //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
     this.getScreenSize();
 
