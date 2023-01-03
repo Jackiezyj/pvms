@@ -1,0 +1,29 @@
+<div>
+    <div class="backdiv" #backdiv>
+        <div class="backdivTitle" #backdivTitle>SMART PARK</div>
+    </div>
+    <div class="titleText" #titleText>智慧园区可视化管理系统
+    </div>
+    <div class="login" #login>
+        <div class="formTitle" #formTitle>登录</div>
+        <form [formGroup]="checkoutForm" (submit)="onLogin()">
+            <div>
+                <label for="employeeID" class="employeeIDLebal" #employeeIDLebal>账号</label>
+                <br>
+                <input class="employeeID" type="text" formControlName="employeeID" #employeeID>
+            </div>
+
+            <div>
+                <label for="possword" class="posswordLebal" #posswordLebal>密码</label>
+                <br>
+                <input class="possword" type="password" formControlName="possword" #possword>
+            </div>
+            <div>
+                <button class="loginButton" type="submit" #loginButton>登录</button>
+            </div>
+        </form>
+    </div>
+    <div class="label" #label>
+        <canvas style="width: 100%;height: 100%;"  id="loginCanvas"></canvas>
+    </div>
+</div>
