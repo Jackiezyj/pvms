@@ -1,15 +1,21 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild, ViewChildren, AfterViewInit } from '@angular/core';
-import * as sreenSite from '../utilities/sreenSite';
+// import * as sreenSite from '../utilities/sreenSite';
 import { FormBuilder } from '@angular/forms'
+import { Router } from '@angular/router';
+import { select, Store } from '@ngrx/store';
+import { ScrStyleService } from 'src/app/servies/scr-style.service';
+import { LoginGuard } from 'src/app/utilities/login.guard';
+import { AppState } from 'src/app/utilities/ngrxStore/state';
+import { HomeComponent } from '../home/home.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.less']
 })
+
+
 export class LoginComponent implements OnInit, AfterViewInit {
-  // Declare height and width variables
-  scrHeight: any;
-  scrWidth: any;
+  todolist: any;
   checkoutForm = this.formBuilder.group({
     employeeID: '',
     possword: ''
@@ -17,8 +23,18 @@ export class LoginComponent implements OnInit, AfterViewInit {
   c: any;
   ctx: any;
   constructor(
-    private formBuilder: FormBuilder
-  ) { }
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private store: Store<AppState>,
+    private scrStyleService: ScrStyleService,
+    private loginGuard: LoginGuard,
+    private homeComponent: HomeComponent
+  ) {
+    var streamto = store.pipe(select('todos'));
+    streamto.subscribe((res) => {
+      this.todolist = res;
+    })
+  }
 
   @ViewChild('backdiv', { static: true })
   backdiv!: ElementRef;
@@ -43,26 +59,19 @@ export class LoginComponent implements OnInit, AfterViewInit {
   @ViewChild('backdivTitle', { static: true })
   backdivTitle!: ElementRef;
   ngOnInit(): void {
-    //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
     this.getScreenSize();
-
+    this.checkoutForm.setValue({
+      employeeID: 'Admin',
+      possword: 'Admin'
+    });
   }
   ngAfterViewInit(): void {
     this.initCanvas();
   }
-  getActHeightSize(standarSize: number) {
-    return this.scrHeight * (standarSize / sreenSite.sreenSite.height)
-  }
-  getActWidthSize(standarSize: number) {
-    return this.scrWidth * (standarSize / sreenSite.sreenSite.width)
-  }
-  getActFontSize(standarSize: number) {
-    return this.scrWidth * (standarSize / sreenSite.sreenSite.width)
-  }
+
   @HostListener('window:resize', ['$event'])
   getScreenSize(event?: any) {
-    this.scrHeight = window.innerHeight;
-    this.scrWidth = window.innerWidth;
+    this.scrStyleService.getScreenSize();
     this.changeSize();
     this.drawRec();
   }
@@ -105,17 +114,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
       //顶部的白色饼图
       this.drawSector(x - 11, y - 118, 28, 180, 270, '#ffffff', '#ffffff');
       this.drawSector(x, y - 118.5, 28, 180, 270, '#ffffff', '#ffffff');
-      this.drawRect(x - 11, y - 146.8, 15, 29.5,'#e6e5e5');
+      this.drawRect(x - 11, y - 146.8, 15, 29.5, '#e6e5e5');
       //顶部的蓝色饼图
       this.drawSector(x + 10, y - 115, 25, 270, 120, '#5fafe8', '#0096ff');
-      this.drawRect(x - 5, y - 140, 15, 51,'#5fafe8');
+      this.drawRect(x - 5, y - 140, 15, 51, '#5fafe8');
       this.drawSector(x - 5, y - 115, 25, 270, 180, '#5fafe8', '#0096ff');
-
-
-
     }
   }
-  drawRect(x: any, y: any, width: any, height: any,fillStyle: any,) {
+  drawRect(x: any, y: any, width: any, height: any, fillStyle: any,) {
     this.ctx.save();
     this.ctx.fillStyle = fillStyle;
     this.ctx.beginPath();
@@ -243,71 +249,98 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.ctx.stroke();
   }
   changeSize() {
-    this.backdiv.nativeElement.style = `width: ${this.scrWidth};
-                                          height:  ${this.getActHeightSize(402)}px;
-                                          margin: ${this.getActWidthSize(359)}px auto;
+    this.backdiv.nativeElement.style = `width: 100%;
+                                          height:  ${this.scrStyleService.getActHeightSize(402)}px;
+                                          margin: ${this.scrStyleService.getActWidthSize(359)}px auto;
                                           `;
-    this.login.nativeElement.style = `width: ${this.getActWidthSize(798)}px;
-                                          height:  ${this.getActHeightSize(694)}px;
-                                          left: ${this.getActWidthSize(960)}px;
-                                          line-height: ${this.getActHeightSize(20)}px;
-                                          top: ${this.getActHeightSize(253)}px;
-                                          font-size: ${this.getActWidthSize(72)}px;
+    this.homeComponent.changeCommontStyle(this.login,798,694,960,0,253,72);
+    this.titleText.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(798)}px;
+                                          height:  ${this.scrStyleService.getActHeightSize(20)}px;
+                                          left: ${this.scrStyleService.getActWidthSize(960)}px;
+                                          line-height: ${this.scrStyleService.getActHeightSize(20)}px;
+                                          top: ${this.scrStyleService.getActHeightSize(168)}px;
+                                          font-size: ${this.scrStyleService.getActWidthSize(72)}px;
                                           `;
-    this.titleText.nativeElement.style = `width: ${this.getActWidthSize(798)}px;
-                                          height:  ${this.getActHeightSize(20)}px;
-                                          left: ${this.getActWidthSize(960)}px;
-                                          line-height: ${this.getActHeightSize(20)}px;
-                                          top: ${this.getActHeightSize(168)}px;
-                                          font-size: ${this.getActWidthSize(72)}px;
+
+    this.employeeID.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(591)}px;
+                                          height:  ${this.scrStyleService.getActHeightSize(44)}px;
+                                          left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                          top: ${this.scrStyleService.getActHeightSize(503 - 253)}px;
                                           `;
-    this.employeeID.nativeElement.style = `width: ${this.getActWidthSize(591)}px;
-                                          height:  ${this.getActHeightSize(44)}px;
-                                          left: ${this.getActWidthSize(97)}px;
-                                          top: ${this.getActHeightSize(503 - 253)}px;
-                                          `;
-    this.possword.nativeElement.style = `width: ${this.getActWidthSize(591)}px;
-                                              height:  ${this.getActHeightSize(44)}px;
-                                              left: ${this.getActWidthSize(97)}px;
-                                              top: ${this.getActHeightSize(626 - 253)}px;
+    this.possword.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(591)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(44)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(626 - 253)}px;
                                               `;
-    this.employeeIDLebal.nativeElement.style = `width: ${this.getActWidthSize(96)}px;
-                                              height:  ${this.getActHeightSize(39)}px;
-                                              left: ${this.getActWidthSize(97)}px;
-                                              font-size: ${this.getActWidthSize(28)}px;
-                                              top: ${this.getActHeightSize(444 - 253)}px;
+    this.employeeIDLebal.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(96)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(39)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                              font-size: ${this.scrStyleService.getActWidthSize(28)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(444 - 253)}px;
                                               `;
-    this.posswordLebal.nativeElement.style = `width: ${this.getActWidthSize(96)}px;
-                                              height:  ${this.getActHeightSize(39)}px;
-                                              left: ${this.getActWidthSize(97)}px;
-                                              font-size: ${this.getActWidthSize(28)}px;
-                                              top: ${this.getActHeightSize(567 - 253)}px;
+    this.posswordLebal.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(96)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(39)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                              font-size: ${this.scrStyleService.getActWidthSize(28)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(567 - 253)}px;
                                               `;
-    this.loginButton.nativeElement.style = `width: ${this.getActWidthSize(591)}px;
-                                              height:  ${this.getActHeightSize(60)}px;
-                                              left: ${this.getActWidthSize(97)}px;
-                                              font-size: ${this.getActWidthSize(28)}px;
-                                              top: ${this.getActHeightSize(771 - 253)}px;
+    this.loginButton.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(591)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(60)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                              font-size: ${this.scrStyleService.getActWidthSize(28)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(771 - 253)}px;
                                               line-height: 20px;
                                               `;
-    this.formTitle.nativeElement.style = `width: ${this.getActWidthSize(129)}px;
-                                              height:  ${this.getActHeightSize(50)}px;
-                                              left: ${this.getActWidthSize(97)}px;
-                                              font-size: ${this.getActWidthSize(60)}px;
-                                              top: ${this.getActHeightSize(335 - 253)}px;
-                                              line-height: ${this.getActWidthSize(50)}px;
+    this.formTitle.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(129)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(50)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(97)}px;
+                                              font-size: ${this.scrStyleService.getActWidthSize(60)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(335 - 253)}px;
+                                              line-height: ${this.scrStyleService.getActWidthSize(50)}px;
                                               `;
-    this.label.nativeElement.style = `width: ${this.getActWidthSize(742)}px;
-                                              height:  ${this.getActHeightSize(812)}px;
-                                              left: ${this.getActWidthSize(120)}px;
-                                              top: ${this.getActHeightSize(200)}px;
+    this.label.nativeElement.style = `width: ${this.scrStyleService.getActWidthSize(742)}px;
+                                              height:  ${this.scrStyleService.getActHeightSize(812)}px;
+                                              left: ${this.scrStyleService.getActWidthSize(120)}px;
+                                              top: ${this.scrStyleService.getActHeightSize(200)}px;
                                               `;
-    this.backdivTitle.nativeElement.style = `font-size: ${this.getActWidthSize(42)}px;
-                                              line-height:${this.getActWidthSize(20)}px;;
+    this.backdivTitle.nativeElement.style = `font-size: ${this.scrStyleService.getActWidthSize(42)}px;
+                                              line-height:${this.scrStyleService.getActWidthSize(20)}px;;
                                               `;
   }
   onLogin() {
-    console.log(this.checkoutForm.value.employeeID);
-    console.log(this.checkoutForm.value.possword);
+    // const json = {userName:this.checkoutForm.value.employeeID};
+    // this.local.setObject(`${this.checkoutForm.value.employeeID}`,json);
+    let flag = true;
+    for (let item of this.todolist) {
+      if (this.checkoutForm.value.employeeID === item.employeeID) {
+        this.updateUser();
+        flag = false;
+        break;
+      } else {
+
+      }
+    }
+    if (flag) {
+      this.addUser();
+      console.log('添加用户');
+    }
+    //登录验证成功
+    this.loginGuard.loggedIn = true;
+    this.router.navigateByUrl("/home/situation");
+
   }
+  addUser() {
+    this.store.dispatch({
+      type: 'ADDSTATE',
+      payload: { employeeID: `${this.checkoutForm.value.employeeID}`, name: `${this.checkoutForm.value.employeeID}`, isAuthentication: true }
+    })
+  }
+  updateUser() {
+    this.store.dispatch({
+      type: 'UPDATESTATE',
+      payload: { employeeID: `${this.checkoutForm.value.employeeID}`, name: `${this.checkoutForm.value.employeeID}`, isAuthentication: true }
+    })
+  }
+
+
 }

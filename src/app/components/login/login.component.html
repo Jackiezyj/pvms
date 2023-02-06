@@ -6,20 +6,20 @@
     </div>
 
 
-    
+
     <div class="login" #login>
         <div class="formTitle" #formTitle>登录</div>
         <form [formGroup]="checkoutForm" (submit)="onLogin()">
             <div>
                 <label for="employeeID" class="employeeIDLebal" #employeeIDLebal>账号</label>
                 <br>
-                <input class="employeeID" type="text" formControlName="employeeID" #employeeID>
+                <input class="employeeID" type="text" formControlName="employeeID" value="Admin" #employeeID>
             </div>
 
             <div>
                 <label for="possword" class="posswordLebal" #posswordLebal>密码</label>
                 <br>
-                <input class="possword" type="password" formControlName="possword" #possword>
+                <input class="possword" type="password" formControlName="possword" value="Admin" #possword>
             </div>
             <div>
                 <button class="loginButton" type="submit" #loginButton>登录</button>

@@ -1,0 +1,23 @@
+<div>
+  <div class="header" #header>
+    <div class="systemName" #systemName>智慧园区可视化管理系统</div>
+    <div class="systemName" #situation>
+      <a [routerLink]="['situation']">营区态势</a>
+    </div>
+    <div class="systemName" #access>
+      <a [routerLink]="['access/cars']">出入管理</a>
+      </div>
+    <div class="systemName" #monitor>
+      <a [routerLink]="['monitor']">监控点位</a>
+      </div>
+    <div class="systemName" #power>
+      <a [routerLink]="['power']">能耗管理</a>
+      </div>
+    <div class="systemName" #congigure>
+      <a [routerLink]="['congigure']">配置中心</a>
+      </div>
+    <div class="systemName" #systemDate>{{date}}</div>
+    <div class="systemName" #Admin>Admin</div>
+  </div>
+</div>
+<router-outlet></router-outlet>

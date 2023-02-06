@@ -1,0 +1,101 @@
+<div>
+  <div class="titleBackgroud" #titleBackgroud>
+    <div class="title" #title>
+      车辆进出记录
+    </div>
+  </div>
+  <div>
+    <div>
+      <div class="sum" #todayInSum>
+        <div class="sumText" #todayInSumText>当日入营车辆</div>
+        <div class="sumNum" #todayInSumNum>
+          {{cars.todayInSum}}辆
+        </div>
+      </div>
+      <div class="sum" #todayOutSum>
+        <div class="sumText" #todayOutSumText>当日出营车辆</div>
+        <div class="sumNum" #todayOutSumNum>
+          {{cars.todayOutSum}}辆
+        </div>
+      </div>
+      <div class="sum" #focusOut_VehicleSum>
+        <div class="sumText" #focusOut_VehicleSumText>在营外重点关注车辆</div>
+        <div class="sumNum" #focusOut_VehicleSumNum>
+          {{cars.focusOut_VehicleSum}}辆
+        </div>
+      </div>
+      <div class="sum" #recordsSum>
+        <div class="sumText" #recordsSumText>车辆缴费总额</div>
+        <div class="sumNum" #recordsSumNum>
+          {{cars.recordsSum}}元
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter" #filter>
+
+  </div>
+  <div class="mianBoard" #mianBoard>
+    <table class="mianBoardHeadTable" #mianBoardHeadTable>
+      <tr>
+        <th *ngFor="let item of tableTh">
+          <ng-container *ngIf="item.id === 1; else elseTemplate">
+            <div>
+              <input type="checkbox"  id="all"   (change)="checkedAllTr()"> {{item.thData}}
+            </div>
+          </ng-container>
+          <ng-template #elseTemplate>
+            <div>
+              {{item.thData}}
+            </div>
+          </ng-template>
+        </th>
+      </tr>
+    </table>
+    <table class="mianBoardTable"  #mianBoardTable>
+      <tr *ngFor="let item of cars.cars">
+        <td>
+          <div>
+            <input type="checkbox" (change)="checkedOneTr(item.id)" name="inp">
+          </div>
+        </td>
+        <td>{{item.plateNO}}</td>
+        <td>{{item.vehicleType}}</td>
+        <td>{{item.in_outType}}</td>
+        <td>{{item.timeOfEntry}}</td>
+        <td>{{item.departureTime}}</td>
+        <td>{{item.currentState}}</td>
+        <td>{{item.name}}</td>
+        <td>{{item.mobileNO}}</td>
+        <td>{{item.records}}</td>
+        <td>
+          <div (click)="deleteCarsDataByID(item.id)" style="cursor:pointer">删除</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="footer" #footer>
+    <div class="footerText" #footerText2>
+      共{{cars.sum}}条 本页{{cars.carsReturnSum}}条
+    </div>
+    <button class="footerButton" (click)="getCaresDataByPageNum('comfire')" #footerButton>确定</button>
+    <div class="footerText" #footerText>跳到第</div>
+    <div>
+      <input class="footerInput" [(ngModel)]="cars.selectPage" oninput="value=value.replace(/[^\d]/g,'')"
+        title="请输入1~4整数" #footerInput>
+    </div>
+    <div class="footerText" #footerText1>页</div>
+    <table class="pagesNum">
+      <tr>
+        <td><button class="footerButton" #footerButtonUp (click)="getCaresDataByPageNum('up')">上一页</button></td>
+        <td *ngFor="let item of cars.pagesSum">
+          <div>
+            <button class="footerButton" id="page{{item}}" (click)="getCaresDataByPageNum(item)">{{item}}</button>
+          </div>
+        </td>
+        <td><button class="footerButton" #footerButtonDown (click)="getCaresDataByPageNum('down')">下一页</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
